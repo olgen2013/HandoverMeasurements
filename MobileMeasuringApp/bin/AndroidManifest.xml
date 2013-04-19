@@ -22,6 +22,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.example.mobilemeasuringapp.MobileConnectionMeasurements"
+            android:label="@string/title_activity_mobile_connection_measurements" >
+        </activity>
+        <activity
+            android:name="com.example.mobilemeasuringapp.SensorData"
+            android:label="@string/title_activity_sensor_data" >
+        </activity>
+        <activity
+            android:name="com.example.mobilemeasuringapp.PreferencesActivity"
+            android:label="@string/title_activity_preferences_activity" >
+        </activity>
+       
     </application>
 
 </manifest>

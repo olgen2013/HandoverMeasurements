@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+ 
+    
+    <PreferenceCategory
+        android:key="generalConfigurations"
+        android:title="General Configurations" >
+            
+            <EditTextPreference
+            android:defaultValue="141.62.65.131:443"
+            android:key="serveraddress"
+            android:summary="hostname:port e.g. 141.62.65.131:443"
+            android:title="Server address" />
+    
+            <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="screen_on"
+            android:summary="Keeps screen on while measurements."
+            android:title="Screen On" />
+            
+            <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="ntp_server"
+            android:title="NTP-Server" />  
+    </PreferenceCategory>
+            
+    <PreferenceCategory
+        android:key="MobileConnectionMeasurementsPrefs"
+        android:title="Mobile Connection Measurements" >
+    
+        <EditTextPreference
+            android:numeric="integer"
+            android:defaultValue="500"
+			android:key="playload_size"
+			android:summary="Enter payload size of data packet: (in bytes)"
+			android:title="Playload size" />
+        
+        <EditTextPreference
+            android:numeric="integer"
+            android:defaultValue="500"
+			android:key="transmission_interval"
+			android:summary="Enter transmission interval of data packets: (in ms)"
+			android:title="Transmission interval" />
+    </PreferenceCategory>
+  
+    <PreferenceCategory
+        android:key="sensorDataPrefs"
+        android:title="Sensor Data Configurations" >  
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="mobile_network_info"
+            android:title="Mobile network information" />
+        
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="Location_info"
+            android:title="Location information" />  
+            
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="Location_info"
+            android:title="Location information" />  
+    </PreferenceCategory>    
+    
+    <PreferenceCategory
+        android:key="logger_config"
+        android:title="Logger Configuration" >  
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="logger"
+            android:summary="Turns the logger on or off: "
+            android:title="Logger" />
+        
+        <EditTextPreference
+            android:defaultValue="50"
+            android:dependency="logger"
+            android:key="log_interval"
+            android:numeric="integer"
+            android:summary="Enter logging interval of Mobile Connection Measurements and Sensor Data : (in ms)"
+            android:title="Logging interval" />     
+    </PreferenceCategory>
+</PreferenceScreen>

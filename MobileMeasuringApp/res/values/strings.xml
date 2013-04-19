@@ -4,5 +4,8 @@
     <string name="app_name">MobileMeasuringApp</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
+    <string name="title_activity_mobile_connection_measurements">MobileConnectionMeasurements</string>
+    <string name="title_activity_sensor_data">SensorData</string>
+    <string name="title_activity_preferences_activity">PreferencesActivity</string>
 
 </resources>

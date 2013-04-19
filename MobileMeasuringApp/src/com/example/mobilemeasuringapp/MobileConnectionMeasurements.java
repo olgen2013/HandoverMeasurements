@@ -6,21 +6,21 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
+import android.support.v4.app.NavUtils;
 
-public class MainActivity extends Activity {
+public class MobileConnectionMeasurements extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_mobile_connection_measurements);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(android.view.Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		MenuInflater menuInflater = getMenuInflater();
-		menuInflater.inflate(R.menu.activity_main, menu);
+		menuInflater.inflate(R.menu.activity_mobile_connection_measurements, menu);
 		return true;
 	}
 	
@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
 		case R.id.preferences:
-			Intent intent = new Intent(MainActivity.this, PreferencesActivity.class);
+			Intent intent = new Intent(MobileConnectionMeasurements.this, PreferencesActivity.class);
 			startActivity(intent);
 			break;
 		case R.id.exit:
@@ -36,15 +36,5 @@ public class MainActivity extends Activity {
 			break;
 		}
 		return false;
-	}
-	
-	public void startMobileConnectionMeasurements(View view){
-	    Intent intent = new Intent(this, MobileConnectionMeasurements.class);
-	    startActivity(intent);
-	}
-	
-	public void startSensorData(View view){
-	    Intent intent = new Intent(this, SensorData.class);
-	    startActivity(intent);
 	}
 }
