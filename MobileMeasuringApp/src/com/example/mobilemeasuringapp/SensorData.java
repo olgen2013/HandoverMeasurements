@@ -1,12 +1,10 @@
 package com.example.mobilemeasuringapp;
 
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
-import android.view.Menu;
+import android.os.Bundle;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.support.v4.app.NavUtils;
 
 public class SensorData extends Activity {
 
