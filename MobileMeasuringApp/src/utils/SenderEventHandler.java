@@ -15,7 +15,6 @@ public class SenderEventHandler implements Wamp.EventHandler {
 	public SenderEventHandler(MobileConnectionMeasurements mConnectionMeasurements, SmartphoneData smartphoneData) {       
         this.mConnectionMeasurements = mConnectionMeasurements;
         this.smartphoneData = smartphoneData;
-		mConnectionMeasurements.notificationArrayAdapter.add("init ReceiverEventHandler");
 	}
 	
 	@Override

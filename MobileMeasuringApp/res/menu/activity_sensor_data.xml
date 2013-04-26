@@ -6,6 +6,6 @@
         android:title="Preferences"/>
     <item
         android:id="@+id/exit"
-        android:title="Exit App"/>
+        android:title="Exit View"/>
 
 </menu>
