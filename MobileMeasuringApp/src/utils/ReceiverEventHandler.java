@@ -1,5 +1,7 @@
 package utils;
 
+import java.io.UnsupportedEncodingException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,8 +21,6 @@ public class ReceiverEventHandler implements Wamp.EventHandler {
 
 	@Override
 	public void onEvent(String topicUri, Object event) {
-
-
 		//		mConnectionMeasurements.notificationArrayAdapter.add(event.toString());
 
 
@@ -51,14 +51,17 @@ public class ReceiverEventHandler implements Wamp.EventHandler {
 		 */
 
 		// pro zeichen ein byte + header size
-		int payloadSize = reveivedPayloadString.length() * 8;
-		byte messageSize[] =  reveivedPayloadString.getBytes();
+		int payloadSize = (reveivedPayloadString.length() + 48 + 34)* 8;
+		byte messageSize[] = reveivedPayloadString.getBytes();
 		int tmpSize = messageSize.length;
+		
+		// throughput in kbit/s
 		double throughput = ((double)payloadSize*(1000.0 / (latency/2.0)))/1000;
 
 		try {
 			mConnectionMeasurements.notificationArrayAdapter.add("NetworkType: " + reveivedPayload.get("networktype").toString());
 			mConnectionMeasurements.notificationArrayAdapter.add("String lenght: " + reveivedPayloadString.length());
+			mConnectionMeasurements.notificationArrayAdapter.add("String: " + reveivedPayloadString);
 			mConnectionMeasurements.notificationArrayAdapter.add("ByteSize: " + tmpSize);
 			mConnectionMeasurements.notificationArrayAdapter.add("calculated throughput: " + throughput + "kbit/sec");
 			mConnectionMeasurements.notificationArrayAdapter.add("calculated latency: " + latency + "ms");

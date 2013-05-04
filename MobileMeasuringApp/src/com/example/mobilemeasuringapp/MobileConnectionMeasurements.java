@@ -95,7 +95,7 @@ public class MobileConnectionMeasurements extends Activity {
 					  
 							
 				String randomData = "";
-				for (int i=0; i < 3000; i++){
+				for (int i=0; i < 1100; i++){
 					randomData = randomData + "a";
 				}
 				
@@ -162,7 +162,7 @@ public class MobileConnectionMeasurements extends Activity {
 		}
 
 		smartphoneData = new SmartphoneData((LocationManager) this.getSystemService(Context.LOCATION_SERVICE), (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE));
-		//initWebSocketConnection();              
+		//initWebSocketConnection();             
 
 	}
 
@@ -211,10 +211,18 @@ public class MobileConnectionMeasurements extends Activity {
 		// setup connections handlers
 		senderConnectionHandler = new SenderConnectionHandler(this, MOBILE_CONNECTION_MEASUREMENTS, senderConnection, senderEventHandler);
 		receiverConnectionHandler = new ReceiverConnectionHandler(this, MOBILE_CONNECTION_MEASUREMENTS, receiverConnection, receiverEventHandler);
-
+		
 		// setup receiver connection
-		final String wsuri = "ws://" + serverAddress;
-		receiverConnection.connect(wsuri, receiverConnectionHandler);
+		if(receiverConnection.isConnected()){
+			receiverConnection.disconnect();
+			final String wsuri = "ws://" + serverAddress;
+			receiverConnection.connect(wsuri, receiverConnectionHandler);
+		}
+		else{
+			final String wsuri = "ws://" + serverAddress;
+			receiverConnection.connect(wsuri, receiverConnectionHandler);			
+		}
+
 	}
 
 	private void initView(){
