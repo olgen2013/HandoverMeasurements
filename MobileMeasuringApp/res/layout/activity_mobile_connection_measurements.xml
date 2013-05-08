@@ -2,54 +2,52 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    
     android:orientation="vertical"
-    android:padding="12dip"
+    android:padding="12sp"
     android:weightSum="1" >
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="64dp" >
+    <TableLayout
+        android:id="@+id/tableLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="64sp"
+        android:stretchColumns="*"
+         >
 
-        <Button
-            android:id="@+id/connectButton"
-            android:layout_width="120dip"
-            android:layout_height="match_parent"
-            android:layout_gravity="right"
-            android:layout_margin="16dip"
-            android:layout_weight="0.31"
-            android:bufferType="editable"
-            android:text="Connect"
-            android:textSize="14sp" >
-
-        </Button>
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5sp" >
         
         <Button
-            android:id="@+id/sendButton"
-            android:layout_width="120dip"
+            android:id="@+id/connectButton"
+            android:layout_width="120sp"
             android:layout_height="match_parent"
-            android:layout_gravity="right"
-            android:layout_margin="16dip"
-            android:layout_weight="0.49"
-            android:bufferType="editable"
-            android:text="Send"
-            android:textSize="14sp" >
+            android:layout_gravity="center"
+            android:text="@string/button_connect" />
+      
+        <Button
+            android:id="@+id/sendButton"
+            android:layout_width="120sp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:text="@string/button_send" />
+        
+        </TableRow>
 
-        </Button>
-    </LinearLayout>
+    </TableLayout>
 
     <TextView
         android:id="@+id/statusline"
         android:layout_width="fill_parent"
-        android:layout_height="44dp"
-        android:text="Ready."
-        android:textSize="18dip" />
+        android:layout_height="44sp"
+        android:text="@string/text_ready"
+        android:textSize="18sp" />
 
     <ListView
         android:id="@+id/notificationList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dip"
         android:stackFromBottom="true"
         android:transcriptMode="alwaysScroll"
         android:layout_weight="1" >
