@@ -1,13 +1,17 @@
 package com.example.mobilemeasuringapp;
 
+import java.util.UUID;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import utils.ReceiverConnectionHandler;
 import utils.ReceiverEventHandler;
 import utils.SenderConnectionHandler;
 import utils.SenderEventHandler;
+import utils.ShellInterface;
 import utils.SmartphoneData;
-import utils.ReceiverConnectionHandler;
+import utils.SntpClient;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +19,7 @@ import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -52,6 +57,10 @@ public class MobileConnectionMeasurements extends Activity {
 	private SmartphoneData smartphoneData;
 	// location manager for GPS
 	private LocationManager locationManager;
+	
+    // Time Sync variables
+    long syncTimestamp = 0;
+    private TimeSyncTask timeSyncTask = new TimeSyncTask();
 
 	// preference variables
 	public int transmissionInterval;
@@ -78,7 +87,39 @@ public class MobileConnectionMeasurements extends Activity {
 	private ListView notificationList;
 
 
-
+    private class TimeSyncTask extends AsyncTask <Void,Void,Void> {
+    	@Override
+    	protected Void doInBackground(Void... arg0) {
+    		SntpClient client = new SntpClient();
+    		
+    		while (true) {
+    			if (client.requestTime(ntpServerAddress, 1000)) {
+        			syncTimestamp = client.getNtpTime() + SystemClock.elapsedRealtime() - client.getNtpTimeReference();
+        			setTime(syncTimestamp);
+        		}
+    			
+    			try {
+					Thread.sleep(timeSyncInterval);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+    			
+    			if (isCancelled()) {
+					break;
+				}
+    		}
+    		return null;
+    	}
+    	
+    	// set system time
+    	public void setTime(long time) {
+    	    if (ShellInterface.isSuAvailable()) {
+    	      ShellInterface.runCommand("chmod 666 /dev/alarm");
+    	      SystemClock.setCurrentTimeMillis(time);
+    	      ShellInterface.runCommand("chmod 664 /dev/alarm");
+    	    }
+    	  }
+    }
 
 	private class WebSocketTransmissionTask extends AsyncTask <Void,Void,Void> {
 		@Override
@@ -93,10 +134,10 @@ public class MobileConnectionMeasurements extends Activity {
 					break;
 				}
 					  
-							
 				String randomData = "";
-				for (int i=0; i < 1100; i++){
-					randomData = randomData + "a";
+				for (int i=0; i < 40; i++){
+					//randomData = randomData + "a";
+					randomData = randomData + UUID.randomUUID().toString();
 				}
 				
 				payload = new JSONObject();
@@ -164,6 +205,14 @@ public class MobileConnectionMeasurements extends Activity {
 		smartphoneData = new SmartphoneData((LocationManager) this.getSystemService(Context.LOCATION_SERVICE), (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE));
 		//initWebSocketConnection();             
 
+		timeSyncTask = new TimeSyncTask();
+		timeSyncTask.execute();
+	}
+	@Override
+	protected void onRestart() {
+		// TODO Auto-generated method stub
+		super.onRestart();
+		timeSyncTask.cancel(true);
 	}
 
 	@Override

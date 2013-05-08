@@ -1,7 +1,5 @@
 package utils;
 
-import java.io.UnsupportedEncodingException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,6 +28,7 @@ public class ReceiverEventHandler implements Wamp.EventHandler {
 		//			
 		// cast String to JSON Object
 		String reveivedPayloadString = (String) event;
+		//mConnectionMeasurements.notificationArrayAdapter.add(reveivedPayloadString);
 		reveivedPayload = null;
 
 		try {reveivedPayload = new JSONObject(reveivedPayloadString);} 
