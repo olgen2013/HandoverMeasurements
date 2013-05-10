@@ -9,11 +9,12 @@
     <string name="title_activity_preferences_activity">PreferencesActivity</string>
     <string name="button_start_measurement">Mobile Connection Measurements</string>
     <string name="button_StartSensorData">Sensor Data</string>
+    <string name="button_StartPureWebSocket">Pure WebSocket</string>
     <string name="text_app_mode">Choose an app-mode: </string>
     <string name="button_connect">Connect</string>
     <string name="button_send">Send</string>
     <string name="text_ready">Ready.</string>
     <string name="button_start_rec">Start recording</string>
-    
+    <string name="title_activity_pure_web_socket">PureWebSocket</string>
 
 </resources>

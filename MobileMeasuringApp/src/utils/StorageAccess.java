@@ -24,7 +24,7 @@ public class StorageAccess {
 			try {
 				File directory = Environment.getExternalStorageDirectory();
 				
-				File myFile = new File(directory, strFilename);
+				File myFile = new File(directory+"/messungen", strFilename);
 				FileInputStream fIn = new FileInputStream(myFile);
 				BufferedReader myReader = new BufferedReader(new InputStreamReader(fIn));
 				String aDataRow = "";
@@ -48,7 +48,7 @@ public class StorageAccess {
 			directory = Environment.getExternalStorageDirectory();
 	
 			try {
-		        File myFile = new File(directory, strFilename);
+		        File myFile = new File(directory+"/messungen", strFilename);
 				myFile.createNewFile();
 				
 				FileOutputStream fOut = new FileOutputStream(myFile, true);

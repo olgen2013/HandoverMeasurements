@@ -20,7 +20,7 @@ class PubSubServer1(WampServerProtocol):
         ##self.registerForPubSub("http://example.com/simple#", True)
         # self.registerForPubSub("http://example.com/event")
         
-        self.registerForPubSub("mobileConnectionMeasurements/latencyAndThroughtput")
+        self.registerForPubSub("moma/latencyAndThroughtput")
 
 if __name__ == '__main__':
 

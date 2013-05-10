@@ -42,6 +42,11 @@ public class MainActivity extends Activity {
 	    startActivity(intent);
 	}
 	
+	public void startPureWebSocket(View view){
+	    Intent intent = new Intent(this, PureWebSocket.class);
+	    startActivity(intent);
+	}
+	
 	public void startSensorData(View view){
 	    Intent intent = new Intent(this, SensorData.class);
 	    startActivity(intent);

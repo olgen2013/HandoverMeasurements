@@ -7,13 +7,13 @@
     <uses-sdk
         android:minSdkVersion="10"
         android:targetSdkVersion="10" />
-    
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -40,7 +40,14 @@
             android:name="com.example.mobilemeasuringapp.PreferencesActivity"
             android:label="@string/title_activity_preferences_activity" >
         </activity>
-       
+        <activity
+            android:name="com.example.mobilemeasuringapp.PureWebSocket"
+            android:label="@string/title_activity_pure_web_socket"
+            android:parentActivityName="com.example.mobilemeasuringapp.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.mobilemeasuringapp.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

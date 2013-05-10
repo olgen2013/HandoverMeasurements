@@ -1,18 +1,9 @@
 package com.example.mobilemeasuringapp;
 
-import java.util.UUID;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import utils.Logger;
-import utils.ReceiverConnectionHandler;
-import utils.ReceiverEventHandler;
-import utils.SenderConnectionHandler;
-import utils.SenderEventHandler;
 import utils.ShellInterface;
 import utils.SmartphoneData;
 import utils.SntpClient;
+import utils.WSConnectionHandler;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +15,7 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,28 +25,20 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import de.tavendo.autobahn.Wamp;
-import de.tavendo.autobahn.WampConnection;
 import de.tavendo.autobahn.WebSocketConnection;
+import de.tavendo.autobahn.WebSocketException;
 
-public class MobileConnectionMeasurements extends Activity {
+public class PureWebSocket extends Activity {
 
 	// WebSocket variables
 	public final String MOBILE_CONNECTION_MEASUREMENTS = "moma/latencyAndThroughtput";
 	public final int MAX_SIZE_NOTIFICATION_ARRAY = 20;
 	public boolean connectedToServer = false;
 
-	public final Wamp receiverConnection = new WampConnection();
-	public final WebSocketConnection wsConnection = new WebSocketConnection();
-	public ReceiverConnectionHandler receiverConnectionHandler;
-	public ReceiverEventHandler receiverEventHandler;
-
-	public final Wamp senderConnection = new WampConnection();
-	public SenderConnectionHandler senderConnectionHandler;
-	public SenderEventHandler senderEventHandler;
+	WebSocketConnection wsConnection = new WebSocketConnection();
+	public WSConnectionHandler wsConnectionHandler;
 
 	public boolean subscribed = false;
-	private WebSocketTransmissionTask wsTransmissionTask;
 
 	// smartphone data 
 	private SmartphoneData smartphoneData;
@@ -124,72 +108,12 @@ public class MobileConnectionMeasurements extends Activity {
 		}
 	}
 
-	private class WebSocketTransmissionTask extends AsyncTask <Void,Void,Void> {
-		@Override
-		protected Void doInBackground(Void... arg0) {
-			JSONObject payload;
-
-			while (true) {
-
-				if(isCancelled()){
-					//TODO: calculate conclusion e.g. of throughput or latency 
-					break;
-				}
-				
-				// generate random date as payload
-				String randomData = "";
-				for (int i=0; i < 40; i++){
-					//randomData = randomData + "a";
-					randomData = randomData + UUID.randomUUID().toString();
-				}
-				
-				// generate the payload object 
-				payload = new JSONObject();
-				try {
-					payload.put("latitude", smartphoneData.getLatitude());
-					payload.put("longitude", smartphoneData.getLongitude());
-//					payload.put("gpsdate", smartphoneData.getDate());
-					payload.put("gpsspeed", smartphoneData.getSpeed());
-					payload.put("timestamp_sender", smartphoneData.getDate().getTime());
-					payload.put("networktype", smartphoneData.getNetworkType());
-					payload.put("randomData", randomData);
-				} catch (JSONException e1) {
-					e1.printStackTrace();
-				}
-
-				// TODO: adjust as a basic WS-Connection
-				senderConnection.publish(MOBILE_CONNECTION_MEASUREMENTS, payload.toString());
-				
-				//Log latency package sent
-//				if (loggerOn == true) {
-//					JSONObject logObject = new JSONObject();
-//					logObject = payload;
-//					try {
-//						logObject.put("mode", "receiver");
-//					} catch (JSONException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//					logObject.remove("randomData");
-//					// write to logger
-//					Logger.log(logObject);
-//				}
-				
-				// set thread to sleep
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			return null;
-		}
-	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_mobile_connection_measurements);
+		setContentView(R.layout.activity_pure_web_socket);
+		// Show the Up button in the action bar.
+		//getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		// access preference parameters
 		getPreferences();
@@ -197,7 +121,6 @@ public class MobileConnectionMeasurements extends Activity {
 		initView();
 		// get location manager
 		locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-
 	}
 
 	@Override
@@ -215,7 +138,7 @@ public class MobileConnectionMeasurements extends Activity {
 		}
 
 		smartphoneData = new SmartphoneData((LocationManager) this.getSystemService(Context.LOCATION_SERVICE), (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE));
-		
+
 		// create and start time synchronization 
 		timeSyncTask = new TimeSyncTask();
 		timeSyncTask.execute();
@@ -240,19 +163,19 @@ public class MobileConnectionMeasurements extends Activity {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(android.view.Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
 		super.onCreateOptionsMenu(menu);
 		MenuInflater menuInflater = getMenuInflater();
-		menuInflater.inflate(R.menu.activity_mobile_connection_measurements, menu);
+		menuInflater.inflate(R.menu.activity_pure_web_socket, menu);
 		return true;
-
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
 		case R.id.preferences:
-			Intent intent = new Intent(MobileConnectionMeasurements.this, PreferencesActivity.class);
+			Intent intent = new Intent(PureWebSocket.this, PreferencesActivity.class);
 			startActivity(intent);
 			break;
 		case R.id.exit:
@@ -260,31 +183,12 @@ public class MobileConnectionMeasurements extends Activity {
 			break;
 		}
 		return false;
+
 	}
 
-
+	
 	private void initWebSocketConnection(){		
-
-		// setup event handlers
-		senderEventHandler = new SenderEventHandler(this, smartphoneData);
-		receiverEventHandler = new ReceiverEventHandler(this, smartphoneData);
-
-		// setup connections handlers
-		senderConnectionHandler = new SenderConnectionHandler(this, MOBILE_CONNECTION_MEASUREMENTS, senderConnection, senderEventHandler);
-		receiverConnectionHandler = new ReceiverConnectionHandler(this, MOBILE_CONNECTION_MEASUREMENTS, receiverConnection, receiverEventHandler);
-
-		// setup receiver connection
-		if(receiverConnection.isConnected()){
-			receiverConnection.disconnect();
-			final String wsuri = "ws://" + serverAddress;
-			receiverConnection.connect(wsuri, receiverConnectionHandler);
-			
-		}
-		else{
-			final String wsuri = "ws://" + serverAddress;
-			receiverConnection.connect(wsuri, receiverConnectionHandler);			
-		}
-
+		wsConnectionHandler = new WSConnectionHandler(this, wsConnection);
 	}
 
 	private void initView(){
@@ -313,49 +217,52 @@ public class MobileConnectionMeasurements extends Activity {
 					connectButtonPressed = true;
 
 					final String wsuri = "ws://" + serverAddress;
-					senderConnection.connect(wsuri, senderConnectionHandler);
+					try {wsConnection.connect(wsuri, wsConnectionHandler);} 
+					catch (WebSocketException e) {e.printStackTrace();}
 					statusText.setText("Sender + Receiver connected.");
 				}
 				else{
 					connectButton.setText("Connect");
 					connectButtonPressed = false;
-					senderConnection.disconnect();	
+					wsConnection.disconnect();
 					statusText.setText("Sender ready to connect.");
 				}
 			}
 		});
 	}
 	private void intiSendButton() {
-		sendButton.setText("Start Sending");
-		sendButton.setOnClickListener(new Button.OnClickListener() {
-			public void onClick(View v) {
-				if (!sendButtonPressed && connectButtonPressed){
-					sendButton.setText("Stop Sending");
-					sendButtonPressed = true;
-					notificationArrayAdapter.add("Starting Measuring Task ...");
-
-					wsTransmissionTask = new WebSocketTransmissionTask();
-					wsTransmissionTask.execute();
-					
-					Logger.createLogFile("moma");
-				}
-				else if(sendButtonPressed){
-					sendButton.setText("Start Sending");
-					sendButtonPressed = false;
-					wsTransmissionTask.cancel(true);
-					Logger.close();
-					notificationArrayAdapter.add("Stoping Measuring Task ...");   
-				}					
-				else{
-					notificationArrayAdapter.add("WebSocket connection isn't active ...");
-				}
-			}
-		});
+		sendButton.setVisibility(Button.INVISIBLE);
+		
+//		sendButton.setText("Start Sending");
+//		sendButton.setOnClickListener(new Button.OnClickListener() {
+//			public void onClick(View v) {
+//				if (!sendButtonPressed && connectButtonPressed){
+//					sendButton.setText("Stop Sending");
+//					sendButtonPressed = true;
+//					notificationArrayAdapter.add("Starting Measuring Task ...");
+//
+//					wsTransmissionTask = new WebSocketTransmissionTask();
+//					wsTransmissionTask.execute();
+//
+//					Logger.createLogFile("moma");
+//				}
+//				else if(sendButtonPressed){
+//					sendButton.setText("Start Sending");
+//					sendButtonPressed = false;
+//					wsTransmissionTask.cancel(true);
+//					Logger.close();
+//					notificationArrayAdapter.add("Stoping Measuring Task ...");   
+//				}					
+//				else{
+//					notificationArrayAdapter.add("WebSocket connection isn't active ...");
+//				}
+//			}
+//		});
 	}
 
 	private void getPreferences() {
 		// access preferences 
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MobileConnectionMeasurements.this);
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(PureWebSocket.this);
 
 		this.transmissionInterval = Integer.parseInt(prefs.getString("transmission_interval", "500"));
 		this.playloadSize = Integer.parseInt(prefs.getString("playload_size", "500"));
@@ -376,4 +283,5 @@ public class MobileConnectionMeasurements extends Activity {
 		else
 			this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	}
+
 }

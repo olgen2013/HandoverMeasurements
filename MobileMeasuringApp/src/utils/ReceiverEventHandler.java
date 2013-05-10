@@ -53,7 +53,7 @@ public class ReceiverEventHandler implements Wamp.EventHandler {
 		int payloadSize = (reveivedPayloadString.length() + 48 + 34)* 8;
 		byte messageSize[] = reveivedPayloadString.getBytes();
 		int tmpSize = messageSize.length;
-		
+
 		// throughput in kbit/s
 		double throughput = ((double)payloadSize*(1000.0 / (latency/2.0)))/1000;
 
@@ -65,14 +65,18 @@ public class ReceiverEventHandler implements Wamp.EventHandler {
 			mConnectionMeasurements.notificationArrayAdapter.add("calculated throughput: " + throughput + "kbit/sec");
 			mConnectionMeasurements.notificationArrayAdapter.add("calculated latency: " + latency + "ms");
 
-			//			// Log latency package received
-			//			if (C2CMainActivity.loggerPref == true) {
-			//				eventReceived.put("mode", "receiver");
-			//				eventReceived.put("timestamp_receiver", t1);
-			//				eventReceived.put("latency", latency);
-			//				eventReceived.put("networktype", smartphoneData.getNetworkType());
-			//				Logger.log(eventReceived);
-			//			}
+			
+			JSONObject logObject = new JSONObject();
+			// Log latency package received
+			if (mConnectionMeasurements.loggerOn == true) {
+				logObject.put("mode", "receiver");
+				logObject.put("timestamp_sender", transmissionTime);
+				logObject.put("timestamp_receiver", receiveTime);
+				logObject.put("latency", latency);
+				logObject.put("throughput", throughput);
+				logObject.put("payloadSize", payloadSize);
+				Logger.log(logObject);
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
