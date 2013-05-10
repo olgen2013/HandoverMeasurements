@@ -1,6 +1,5 @@
-import json, string, ntplib, random, struct
+import json, string, ntplib, random, threading
 from threading import Thread
-from time import sleep
 from StringIO import StringIO
 from twisted.internet import reactor
 from autobahn.websocket import WebSocketServerFactory, \
@@ -9,35 +8,48 @@ from autobahn.websocket import WebSocketServerFactory, \
  
  
 class EchoServerProtocol(WebSocketServerProtocol):
- 
+
+   # init methode
+   def __init__(self):
+	self.stop_event = threading.Event()
+	self.threadActive = False
+
+   # on connection opened
    def onOpen(self):
 	print "Server conneced to Client ... "   	
 	self.sendMessage("manual server-Ack", binary=False)
 
+   # on messages received from client
    def onMessage(self, msg, binary):
-#	self.calculateLatency(msg)
-	#thread = Thread(target = self.sendMeasurments)
-	#thread.start()
-	#thread.join()
-	#for i in range(10):
-	#while True:
-	self.sendMessage(self.randomByteString(500), binary=False)
-	#sleep(5)
+	#self.calculateLatency(msg)
 
+	# start sending measuring packets to client
+	if self.threadActive == False:
+		self.stop_event = threading.Event()		
+		thread = threading.Thread(target = self.sendMeasurments, args=2)
+		thread.start()
+		self.threadActive = True
 
-   def sendMeasurments(self):
-	for i in range(10):
-	#while True:
+	# stop sending measuring packets to client
+	else:
+		self.threadActive = False		
+		self.stop_event.set()
+
+   # method for threading issues 	
+   def sendMeasurments(self, interval):
+	while (not self.stop_event.is_set()):
 		self.sendMessage(self.randomByteString(500), binary=False)
-		sleep(1)
+		self.stop_event.wait(interval)
+		pass
 	print "finished sending ... "
 
+   # returns random upper cases string of len bytes
    def randomByteString(self, len):
 	print "create random payload ..."
 	return ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(len))
-#   	return ''.join([struct.pack("!Q",random.getrandbits(64)) for x in xrange(0, len / 8 + int(len % 8 > 0))])[:len]
 
-   # only usefull if server is endpoint
+   # NOTE: only usefull if server is endpoint
+   # converts input stream to dict, to access json elements
    def calculateLatency(self, msg):
 	io = StringIO(msg)
 	out = json.load(io)	

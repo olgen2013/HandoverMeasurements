@@ -220,44 +220,43 @@ public class PureWebSocket extends Activity {
 					try {wsConnection.connect(wsuri, wsConnectionHandler);} 
 					catch (WebSocketException e) {e.printStackTrace();}
 					statusText.setText("Sender + Receiver connected.");
+					
+					sendButton.setVisibility(Button.VISIBLE);
 				}
 				else{
 					connectButton.setText("Connect");
 					connectButtonPressed = false;
 					wsConnection.disconnect();
 					statusText.setText("Sender ready to connect.");
+					sendButton.setVisibility(Button.INVISIBLE);
 				}
 			}
 		});
 	}
 	private void intiSendButton() {
 		sendButton.setVisibility(Button.INVISIBLE);
-		
-//		sendButton.setText("Start Sending");
-//		sendButton.setOnClickListener(new Button.OnClickListener() {
-//			public void onClick(View v) {
-//				if (!sendButtonPressed && connectButtonPressed){
-//					sendButton.setText("Stop Sending");
-//					sendButtonPressed = true;
-//					notificationArrayAdapter.add("Starting Measuring Task ...");
-//
-//					wsTransmissionTask = new WebSocketTransmissionTask();
-//					wsTransmissionTask.execute();
-//
-//					Logger.createLogFile("moma");
-//				}
-//				else if(sendButtonPressed){
-//					sendButton.setText("Start Sending");
-//					sendButtonPressed = false;
-//					wsTransmissionTask.cancel(true);
-//					Logger.close();
-//					notificationArrayAdapter.add("Stoping Measuring Task ...");   
-//				}					
-//				else{
-//					notificationArrayAdapter.add("WebSocket connection isn't active ...");
-//				}
-//			}
-//		});
+		sendButton.setText("Start Sending");
+		sendButton.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View v) {
+				if (!sendButtonPressed && connectButtonPressed){
+					sendButton.setText("Stop Sending");
+					sendButtonPressed = true;
+					notificationArrayAdapter.add("Starting Measurement ...");
+
+					wsConnection.sendTextMessage("Start Sending".toString());
+
+				}
+				else if(sendButtonPressed){
+					sendButton.setText("Start Sending");
+					sendButtonPressed = false;
+					wsConnection.sendTextMessage("Stop Sending".toString());
+					notificationArrayAdapter.add("Stoping Measurement ...");   
+				}					
+				else{
+					notificationArrayAdapter.add("WebSocket connection isn't active ...");
+				}
+			}
+		});
 	}
 
 	private void getPreferences() {

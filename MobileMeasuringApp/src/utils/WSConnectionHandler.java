@@ -22,7 +22,7 @@ public class WSConnectionHandler extends WebSocketConnectionHandler{
 		if(webSocketConnection.isConnected()){
 			pWebSocket.notificationArrayAdapter.add("Sender connected to Server " + pWebSocket.serverAddress);
 			pWebSocket.connectedToServer = true;
-			webSocketConnection.sendTextMessage("bulbber".toString());
+			//webSocketConnection.sendTextMessage("bulbber".toString());
 		}
 		else
 			pWebSocket.notificationArrayAdapter.add("Sender NOT connected to Server " + pWebSocket.serverAddress);
