@@ -16,8 +16,9 @@ class EchoServerProtocol(WebSocketServerProtocol):
 
    # on connection opened
    def onOpen(self):
-	print "Server conneced to Client ... "   	
-	self.sendMessage("manual server-Ack", binary=False)
+	print "Server conneced to Client ... "
+	ack = {"ack": "connection_open_ack"}
+	self.sendMessage(json.dumps(ack), binary=False)
 
    # on messages received from client
    def onMessage(self, msg, binary):
@@ -26,7 +27,7 @@ class EchoServerProtocol(WebSocketServerProtocol):
 	# start sending measuring packets to client
 	if self.threadActive == False:
 		self.stop_event = threading.Event()		
-		thread = threading.Thread(target = self.sendMeasurments, args=2)
+		thread = threading.Thread(target = self.sendMeasurments, args=(2, ))
 		thread.start()
 		self.threadActive = True
 
@@ -38,7 +39,14 @@ class EchoServerProtocol(WebSocketServerProtocol):
    # method for threading issues 	
    def sendMeasurments(self, interval):
 	while (not self.stop_event.is_set()):
-		self.sendMessage(self.randomByteString(500), binary=False)
+
+		# connect to NTP server 
+		ntpClient = ntplib.NTPClient()
+		ntpResponse = ntpClient.request('europe.pool.ntp.org', version=3)
+		sendTime = int(ntpResponse.tx_time*1000)
+
+		payload = {"timestamp":  sendTime, "data" : self.randomByteString(500)}
+		self.sendMessage(json.dumps(payload), binary=False)
 		self.stop_event.wait(interval)
 		pass
 	print "finished sending ... "

@@ -1,5 +1,8 @@
 package utils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.example.mobilemeasuringapp.PureWebSocket;
 
 import de.tavendo.autobahn.WebSocketConnection;
@@ -8,11 +11,15 @@ import de.tavendo.autobahn.WebSocketException;
 
 public class WSConnectionHandler extends WebSocketConnectionHandler{
 
+	SmartphoneData smartphoneData;
+	JSONObject reveivedPayload = new JSONObject();
 	PureWebSocket pWebSocket;
 	WebSocketConnection webSocketConnection;
-	public WSConnectionHandler(PureWebSocket pWebSocket, WebSocketConnection webSocketConnection){
+	
+	public WSConnectionHandler(PureWebSocket pWebSocket, WebSocketConnection webSocketConnection, SmartphoneData smartphoneData){
 		this.pWebSocket = pWebSocket;
 		this.webSocketConnection = webSocketConnection;
+		this.smartphoneData = smartphoneData;
 	}
 
 	@Override
@@ -30,21 +37,66 @@ public class WSConnectionHandler extends WebSocketConnectionHandler{
 
 	@Override
 	public void onBinaryMessage(byte[] payload) {
-		// TODO Auto-generated method stub
 		super.onBinaryMessage(payload);
 		pWebSocket.notificationArrayAdapter.add("onBinaryMessage");
 		pWebSocket.notificationArrayAdapter.add(payload.toString());
 	}
 	
+
+	
+	
 	@Override
 	public void onTextMessage(String payload) {
-		// TODO Auto-generated method stub
 		super.onTextMessage(payload);
-		pWebSocket.notificationArrayAdapter.add("onTextMessage");
-		pWebSocket.notificationArrayAdapter.add(payload.toString());
+
+//		pWebSocket.notificationArrayAdapter.add("onTextMessage");
+//		pWebSocket.notificationArrayAdapter.add(payload.toString());
+			
+		reveivedPayload = null;
+		double latency = 0;
+		long transmissionTime = 0;
+
+		int payloadSize = (payload.length() + 48 + 34)* 8;
 		
-		// momentan wird nur random data übertragen deshalb ist keine berechnung von latenz usw. möglich -> auswertung über wireshark
-		// TODO: Logger (Smartphone Data, und andere Berechungen)
+		try {reveivedPayload = new JSONObject(payload.toString());} 
+		catch (JSONException e1) {e1.printStackTrace();}
+				
+		if(reveivedPayload.has("ack")){
+			try {pWebSocket.notificationArrayAdapter.add(reveivedPayload.get("ack").toString());} 
+			catch (JSONException e) {e.printStackTrace();}
+		}
+		if(reveivedPayload.has("timestamp")){
+			try {transmissionTime = Long.parseLong(reveivedPayload.get("timestamp").toString());}
+			catch (JSONException e) {e.printStackTrace();}
+
+			/*
+			 * latency calculation 
+			 */
+			
+			long receiveTime = smartphoneData.getDate().getTime();
+			latency = (int)(receiveTime - transmissionTime);
+
+			pWebSocket.notificationArrayAdapter.add(transmissionTime+" (transmissionTime)");
+			pWebSocket.notificationArrayAdapter.add(receiveTime+" (receiveTime)");
+			pWebSocket.notificationArrayAdapter.add("latency: "+latency);
+			pWebSocket.notificationArrayAdapter.add("payloadSize: "+payloadSize);
+		}
+		
+		JSONObject logObject = new JSONObject();
+		try {
+			// Log latency package received
+			if (pWebSocket.loggerOn == true) {
+				logObject.put("mode", "receiver");
+				logObject.put("timestamp_sender", transmissionTime);
+				logObject.put("timestamp_receiver", smartphoneData.getDate().getTime());
+				logObject.put("latency", latency);
+				logObject.put("networkType", smartphoneData.getNetworkType());
+				logObject.put("payloadSize", payloadSize);
+				Logger.log(logObject);
+			}	
+		}catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 
 
@@ -63,7 +115,6 @@ public class WSConnectionHandler extends WebSocketConnectionHandler{
 			try {
 				webSocketConnection.connect(wsuri, pWebSocket.wsConnectionHandler);
 			} catch (WebSocketException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

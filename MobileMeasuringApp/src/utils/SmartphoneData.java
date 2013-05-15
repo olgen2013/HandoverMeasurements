@@ -9,6 +9,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.telephony.CellLocation;
+import android.telephony.PhoneStateListener;
+import android.telephony.ServiceState;
 import android.telephony.TelephonyManager;
 
 /* 	INFO: 
@@ -133,9 +136,33 @@ public class SmartphoneData {
     		return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude();
     }
     
+    public void getSignalStrenght(){
+		PhoneStateListener phoneStateListener = new PhoneStateListener() {
+			public void onCallForwardingIndicatorChanged(boolean cfi) {}
+			public void onCallStateChanged(int state, String incomingNumber) {}
+			public void onCellLocationChanged(CellLocation location) {}
+			public void onDataActivity(int direction) {}
+			public void onDataConnectionStateChanged(int state) {}
+			public void onMessageWaitingIndicatorChanged(boolean mwi) {}
+			public void onServiceStateChanged(ServiceState serviceState) {}
+			public void onSignalStrengthChanged(int asu) {}
+			};
+			
+			tManager.listen(phoneStateListener,
+					PhoneStateListener.LISTEN_CALL_FORWARDING_INDICATOR |
+					PhoneStateListener.LISTEN_CALL_STATE |
+					PhoneStateListener.LISTEN_CELL_LOCATION |
+					PhoneStateListener.LISTEN_DATA_ACTIVITY |
+					PhoneStateListener.LISTEN_DATA_CONNECTION_STATE |
+					PhoneStateListener.LISTEN_MESSAGE_WAITING_INDICATOR |
+					PhoneStateListener.LISTEN_SERVICE_STATE |
+					PhoneStateListener.LISTEN_SIGNAL_STRENGTH);
+    }
+    
     public String getNetworkType(){
     	String net = "Unknown";
     	int networkType = tManager.getNetworkType();
+    	
 
     	switch (networkType)
     	{

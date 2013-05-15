@@ -1,5 +1,6 @@
 package com.example.mobilemeasuringapp;
 
+import utils.Logger;
 import utils.ShellInterface;
 import utils.SmartphoneData;
 import utils.SntpClient;
@@ -34,6 +35,8 @@ public class PureWebSocket extends Activity {
 	public final String MOBILE_CONNECTION_MEASUREMENTS = "moma/latencyAndThroughtput";
 	public final int MAX_SIZE_NOTIFICATION_ARRAY = 20;
 	public boolean connectedToServer = false;
+	public boolean serverthreadrunning = false;
+	
 
 	WebSocketConnection wsConnection = new WebSocketConnection();
 	public WSConnectionHandler wsConnectionHandler;
@@ -137,7 +140,7 @@ public class PureWebSocket extends Activity {
 			startActivity(settingsIntent);
 		}
 
-		smartphoneData = new SmartphoneData((LocationManager) this.getSystemService(Context.LOCATION_SERVICE), (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE));
+		//smartphoneData = new SmartphoneData((LocationManager) this.getSystemService(Context.LOCATION_SERVICE), (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE));
 
 		// create and start time synchronization 
 		timeSyncTask = new TimeSyncTask();
@@ -188,7 +191,7 @@ public class PureWebSocket extends Activity {
 
 	
 	private void initWebSocketConnection(){		
-		wsConnectionHandler = new WSConnectionHandler(this, wsConnection);
+		wsConnectionHandler = new WSConnectionHandler(this, wsConnection, smartphoneData);
 	}
 
 	private void initView(){
@@ -222,13 +225,28 @@ public class PureWebSocket extends Activity {
 					statusText.setText("Sender + Receiver connected.");
 					
 					sendButton.setVisibility(Button.VISIBLE);
+					
+					if(loggerOn)
+						Logger.createLogFile("moma");
 				}
 				else{
 					connectButton.setText("Connect");
 					connectButtonPressed = false;
+					
+					if(serverthreadrunning){
+						wsConnection.sendTextMessage("Stop Sending".toString());
+						serverthreadrunning = false;
+						sendButton.setText("Start Sending");
+						sendButtonPressed = false;
+					}
+						
 					wsConnection.disconnect();
+					
 					statusText.setText("Sender ready to connect.");
 					sendButton.setVisibility(Button.INVISIBLE);
+					
+					if(loggerOn)
+						Logger.close();
 				}
 			}
 		});
@@ -244,12 +262,14 @@ public class PureWebSocket extends Activity {
 					notificationArrayAdapter.add("Starting Measurement ...");
 
 					wsConnection.sendTextMessage("Start Sending".toString());
+					serverthreadrunning = true;
 
 				}
 				else if(sendButtonPressed){
 					sendButton.setText("Start Sending");
 					sendButtonPressed = false;
 					wsConnection.sendTextMessage("Stop Sending".toString());
+					serverthreadrunning = false;
 					notificationArrayAdapter.add("Stoping Measurement ...");   
 				}					
 				else{
