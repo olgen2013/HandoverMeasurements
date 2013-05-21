@@ -82,7 +82,7 @@ public class WSConnectionHandler extends WebSocketConnectionHandler{
 			pWebSocket.notificationArrayAdapter.add("payloadSize: "+payloadSize);
 			pWebSocket.notificationArrayAdapter.add("CdmaDbm: "+smartphoneData.getCdmaDbm());
 			pWebSocket.notificationArrayAdapter.add("GsmRssi: "+smartphoneData.getGsmRssi());
-			
+			pWebSocket.notificationArrayAdapter.add("GsmBitErrorRate: "+smartphoneData.getGsmBitErrorRate());
 		}
 		
 		JSONObject logObject = new JSONObject();

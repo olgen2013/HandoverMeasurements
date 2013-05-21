@@ -30,6 +30,7 @@ public class SmartphoneData {
 	private PhoneStateListener phoneStateListener;
 	
 	private int GsmRssi, GsmBitErrorRate, CdmaDbm, CdmaEcio;
+	String LteSignalStrength, LteRsrp;
 
 	private static final int TIME_INTERVAL = 500; 		// time interval in milli seconds 
 	private static final int METER_RANGE = 0; 			// range in meter
@@ -240,6 +241,12 @@ public class SmartphoneData {
 					GsmRssi = -113 + 2 * signalStrength.getGsmSignalStrength();
 					GsmBitErrorRate = signalStrength.getGsmBitErrorRate();	
 				}
+				else if(getNetworkType() == "LTE"){
+					String ltestr = signalStrength.toString();
+					String[] parts = ltestr.split(" ");
+					LteSignalStrength = parts[8];
+					LteRsrp = parts[9];				
+				}
 				else{
 					CdmaDbm = signalStrength.getCdmaDbm();
 					CdmaEcio = signalStrength.getCdmaEcio();	
@@ -272,6 +279,14 @@ public class SmartphoneData {
 
 	public int getCdmaEcio() {
 		return CdmaEcio;
+	}
+
+	public String getLteSignalStrength() {
+		return LteSignalStrength;
+	}
+
+	public String getLteRsrp() {
+		return LteRsrp;
 	}
 
 }
