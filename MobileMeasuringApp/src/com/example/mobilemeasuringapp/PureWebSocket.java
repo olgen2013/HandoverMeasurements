@@ -124,6 +124,7 @@ public class PureWebSocket extends Activity {
 		initView();
 		// get location manager
 		locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+		
 	}
 
 	@Override

@@ -80,6 +80,9 @@ public class WSConnectionHandler extends WebSocketConnectionHandler{
 			pWebSocket.notificationArrayAdapter.add(receiveTime+" (receiveTime)");
 			pWebSocket.notificationArrayAdapter.add("latency: "+latency);
 			pWebSocket.notificationArrayAdapter.add("payloadSize: "+payloadSize);
+			pWebSocket.notificationArrayAdapter.add("CdmaDbm: "+smartphoneData.getCdmaDbm());
+			pWebSocket.notificationArrayAdapter.add("GsmRssi: "+smartphoneData.getGsmRssi());
+			
 		}
 		
 		JSONObject logObject = new JSONObject();
