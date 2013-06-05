@@ -24,10 +24,16 @@ class EchoServerProtocol(WebSocketServerProtocol):
    def onMessage(self, msg, binary):
 	#self.calculateLatency(msg)
 
+	# get remote configuration 
+	io = StringIO(msg)
+	out = json.load(io)
+	transmissionInterval = (json.load(StringIO(out['transmissionInterval'])))
+	playloadSize = (json.load(StringIO(out['playloadSize'])))
+
 	# start sending measuring packets to client
 	if self.threadActive == False:
 		self.stop_event = threading.Event()		
-		thread = threading.Thread(target = self.sendMeasurments, args=(2, ))
+		thread = threading.Thread(target = self.sendMeasurments, args=(transmissionInterval/1000,playloadSize, ))
 		thread.start()
 		self.threadActive = True
 
@@ -37,7 +43,8 @@ class EchoServerProtocol(WebSocketServerProtocol):
 		self.stop_event.set()
 
    # method for threading issues 	
-   def sendMeasurments(self, interval):
+   def sendMeasurments(self, interval, size):
+	print interval, size
 	while (not self.stop_event.is_set()):
 
 		# connect to NTP server 
@@ -45,7 +52,7 @@ class EchoServerProtocol(WebSocketServerProtocol):
 		ntpResponse = ntpClient.request('europe.pool.ntp.org', version=3)
 		sendTime = int(ntpResponse.tx_time*1000)
 
-		payload = {"timestamp":  sendTime, "data" : self.randomByteString(500)}
+		payload = {"timestamp":  sendTime, "data" : self.randomByteString(size)}
 		self.sendMessage(json.dumps(payload), binary=False)
 		self.stop_event.wait(interval)
 		pass

@@ -42,9 +42,6 @@ public class WSConnectionHandler extends WebSocketConnectionHandler{
 		pWebSocket.notificationArrayAdapter.add(payload.toString());
 	}
 	
-
-	
-	
 	@Override
 	public void onTextMessage(String payload) {
 		super.onTextMessage(payload);
@@ -78,11 +75,18 @@ public class WSConnectionHandler extends WebSocketConnectionHandler{
 
 			pWebSocket.notificationArrayAdapter.add(transmissionTime+" (transmissionTime)");
 			pWebSocket.notificationArrayAdapter.add(receiveTime+" (receiveTime)");
-			pWebSocket.notificationArrayAdapter.add("latency: "+latency);
-			pWebSocket.notificationArrayAdapter.add("payloadSize: "+payloadSize);
-			pWebSocket.notificationArrayAdapter.add("CdmaDbm: "+smartphoneData.getCdmaDbm());
+			pWebSocket.notificationArrayAdapter.add("latency (ms): "+latency);
+			pWebSocket.notificationArrayAdapter.add("payloadSize (bit): "+payloadSize);
+			//pWebSocket.notificationArrayAdapter.add("payload: "+payload);
+			
 			pWebSocket.notificationArrayAdapter.add("GsmRssi: "+smartphoneData.getGsmRssi());
 			pWebSocket.notificationArrayAdapter.add("GsmBitErrorRate: "+smartphoneData.getGsmBitErrorRate());
+			
+			pWebSocket.notificationArrayAdapter.add("CdmaDbm: "+smartphoneData.getCdmaDbm());
+			pWebSocket.notificationArrayAdapter.add("CdmaEcio: "+smartphoneData.getCdmaEcio());
+			
+			pWebSocket.notificationArrayAdapter.add("LteRsrp: "+smartphoneData.getLteRsrp());
+			pWebSocket.notificationArrayAdapter.add("LteSignalStrength: "+smartphoneData.getLteSignalStrength());
 		}
 		
 		JSONObject logObject = new JSONObject();
@@ -93,8 +97,17 @@ public class WSConnectionHandler extends WebSocketConnectionHandler{
 				logObject.put("timestamp_sender", transmissionTime);
 				logObject.put("timestamp_receiver", smartphoneData.getDate().getTime());
 				logObject.put("latency", latency);
-				logObject.put("networkType", smartphoneData.getNetworkType());
+				
 				logObject.put("payloadSize", payloadSize);
+				
+				logObject.put("networkType", smartphoneData.getNetworkType());
+				logObject.put("GsmRssi", smartphoneData.getGsmRssi());
+				logObject.put("GsmBitErrorRate", smartphoneData.getGsmBitErrorRate());
+				logObject.put("CdmaDbm", smartphoneData.getCdmaDbm());
+				logObject.put("CdmaEcio", smartphoneData.getCdmaEcio());
+				logObject.put("LteRsrp", smartphoneData.getLteRsrp());
+				logObject.put("LteSignalStrength", smartphoneData.getLteSignalStrength());
+				
 				Logger.log(logObject);
 			}	
 		}catch (JSONException e) {
