@@ -44,7 +44,7 @@ class EchoServerProtocol(WebSocketServerProtocol):
 
    # method for threading issues 	
    def sendMeasurments(self, interval, size):
-	print interval, size
+	print "transmissionInterval (sec): ", interval, " generated playloadSize (byte): ", size
 	while (not self.stop_event.is_set()):
 
 		# connect to NTP server 

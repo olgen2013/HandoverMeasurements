@@ -238,7 +238,17 @@ public class PureWebSocket extends Activity {
 					connectButtonPressed = false;
 					
 					if(serverthreadrunning){
-						wsConnection.sendTextMessage("Stop Sending".toString());
+						
+						JSONObject configObj = new JSONObject();
+						try {
+							configObj.put("playloadSize", playloadSize);
+							configObj.put("transmissionInterval", transmissionInterval);
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						wsConnection.sendTextMessage(configObj.toString());
 						serverthreadrunning = false;
 						sendButton.setText("Start Sending");
 						sendButtonPressed = false;
@@ -260,6 +270,7 @@ public class PureWebSocket extends Activity {
 		sendButton.setText("Start Sending");
 		sendButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
+				
 				JSONObject configObj = new JSONObject();
 				try {
 					configObj.put("playloadSize", playloadSize);
@@ -268,7 +279,6 @@ public class PureWebSocket extends Activity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
 				
 				if (!sendButtonPressed && connectButtonPressed){
 					sendButton.setText("Stop Sending");
