@@ -76,20 +76,28 @@ public class WSConnectionHandler extends WebSocketConnectionHandler{
 			long receiveTime = smartphoneData.getDate().getTime();
 			latency = (int)(receiveTime - transmissionTime);
 
+			pWebSocket.notificationArrayAdapter.add("----------------------------");
 			pWebSocket.notificationArrayAdapter.add(transmissionTime+" (transmissionTime)");
 			pWebSocket.notificationArrayAdapter.add(receiveTime+" (receiveTime)");
 			pWebSocket.notificationArrayAdapter.add("latency (ms): "+latency);
 			pWebSocket.notificationArrayAdapter.add("payloadSize (bit): "+payloadSize);
 			//pWebSocket.notificationArrayAdapter.add("payload: "+payload);
-
+			
 			pWebSocket.notificationArrayAdapter.add("GsmRssi: "+smartphoneData.getGsmRssi());
 			pWebSocket.notificationArrayAdapter.add("GsmBitErrorRate: "+smartphoneData.getGsmBitErrorRate());
 
 			pWebSocket.notificationArrayAdapter.add("CdmaDbm: "+smartphoneData.getCdmaDbm());
 			pWebSocket.notificationArrayAdapter.add("CdmaEcio: "+smartphoneData.getCdmaEcio());
-
+			pWebSocket.notificationArrayAdapter.add("EvdoDbm: "+smartphoneData.getEvdoDbm());
+			pWebSocket.notificationArrayAdapter.add("EvdoEcio: "+smartphoneData.getEvdoEcio());
+			pWebSocket.notificationArrayAdapter.add("EvdoSnr: "+smartphoneData.getEvdoSnr());
+			
 			pWebSocket.notificationArrayAdapter.add("LteRsrp: "+smartphoneData.getLteRsrp());
 			pWebSocket.notificationArrayAdapter.add("LteSignalStrength: "+smartphoneData.getLteSignalStrength());
+			pWebSocket.notificationArrayAdapter.add("LteRsrq: "+smartphoneData.getLteRsrq());
+			pWebSocket.notificationArrayAdapter.add("LteRssnr: "+smartphoneData.getLteRssnr());
+			pWebSocket.notificationArrayAdapter.add("LteCqi: "+smartphoneData.getLteCqi());
+			pWebSocket.notificationArrayAdapter.add("----------------------------");
 		}
 
 		JSONObject logObject = new JSONObject();

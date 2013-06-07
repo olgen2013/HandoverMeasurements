@@ -30,7 +30,7 @@ public class SmartphoneData {
 	private PhoneStateListener phoneStateListener;
 	
 	private int GsmRssi, GsmBitErrorRate, CdmaDbm, CdmaEcio;
-	String LteSignalStrength, LteRsrp;
+	private String LteSignalStrength, LteRsrp, LteRsrq, LteRssnr, LteCqi, EvdoDbm, EvdoEcio, EvdoSnr;
 
 	private static final int TIME_INTERVAL = 500; 		// time interval in milli seconds 
 	private static final int METER_RANGE = 0; 			// range in meter
@@ -236,20 +236,27 @@ public class SmartphoneData {
 			public void onMessageWaitIndicatorChanged(boolean mwi){}
 			public void onServiceStateChanged(ServiceState serviceState){}
 			public void onSignalStrengthsChanged(SignalStrength signalStrength){
+
+				String signalStrengthString = signalStrength.toString();
+				String[] values = signalStrengthString.split(" ");
 				
-				if(signalStrength.isGsm()){
-					GsmRssi = -113 + 2 * signalStrength.getGsmSignalStrength();
-					GsmBitErrorRate = signalStrength.getGsmBitErrorRate();	
+				if(getNetworkType() == "LTE"){
+					LteSignalStrength = values[8];
+					LteRsrp = values[9];
+					LteRsrq = values[10];
+					LteRssnr = values[11];
+					LteCqi = values[12];
 				}
-				else if(getNetworkType() == "LTE"){
-					String ltestr = signalStrength.toString();
-					String[] parts = ltestr.split(" ");
-					LteSignalStrength = parts[8];
-					LteRsrp = parts[9];				
+				else if(getNetworkType() == "EDGE" || getNetworkType() == "GPRS"){
+					GsmRssi = -113 + 2 * Integer.parseInt(values[1]);
+					GsmBitErrorRate = Integer.parseInt(values[2]);
 				}
 				else{
-					CdmaDbm = signalStrength.getCdmaDbm();
-					CdmaEcio = signalStrength.getCdmaEcio();	
+					CdmaDbm = Integer.parseInt(values[3]);
+					CdmaEcio = Integer.parseInt(values[4]);
+					EvdoDbm = values[5];
+					EvdoEcio = values[6];
+					EvdoSnr = values[7];			
 				}
 			}
 		};
@@ -287,6 +294,30 @@ public class SmartphoneData {
 
 	public String getLteRsrp() {
 		return LteRsrp;
+	}
+
+	public String getLteRsrq() {
+		return LteRsrq;
+	}
+
+	public String getLteRssnr() {
+		return LteRssnr;
+	}
+
+	public String getLteCqi() {
+		return LteCqi;
+	}
+
+	public String getEvdoDbm() {
+		return EvdoDbm;
+	}
+
+	public String getEvdoEcio() {
+		return EvdoEcio;
+	}
+
+	public String getEvdoSnr() {
+		return EvdoSnr;
 	}
 
 }

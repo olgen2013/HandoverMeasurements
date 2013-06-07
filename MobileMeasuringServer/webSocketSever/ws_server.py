@@ -1,4 +1,4 @@
-import json, string, ntplib, random, threading
+import json, string, ntplib, random, threading, time
 from threading import Thread
 from StringIO import StringIO
 from twisted.internet import reactor
@@ -11,9 +11,8 @@ class EchoServerProtocol(WebSocketServerProtocol):
 
    # init methode
    def __init__(self):
-	self.stop_event = threading.Event()
 	self.threadActive = False
-
+	self.measurmentsActive = False
    # on connection opened
    def onOpen(self):
 	print "Server conneced to Client ... "
@@ -27,35 +26,37 @@ class EchoServerProtocol(WebSocketServerProtocol):
 	# get remote configuration 
 	io = StringIO(msg)
 	out = json.load(io)
-	transmissionInterval = (json.load(StringIO(out['transmissionInterval'])))
+	transmissionInterval = float((json.load(StringIO(out['transmissionInterval']))))
 	playloadSize = (json.load(StringIO(out['playloadSize'])))
 
 	# start sending measuring packets to client
 	if self.threadActive == False:
 		self.stop_event = threading.Event()		
-		thread = threading.Thread(target = self.sendMeasurments, args=(transmissionInterval/1000,playloadSize, ))
+		self.measurmentsActive = True
+		thread = threading.Thread(target = self.sendMeasurments, args=(transmissionInterval/1000.0,playloadSize, ))
 		thread.start()
 		self.threadActive = True
 
 	# stop sending measuring packets to client
 	else:
-		self.threadActive = False		
+		self.threadActive = False
+		self.measurmentsActive = False	
 		self.stop_event.set()
 
    # method for threading issues 	
    def sendMeasurments(self, interval, size):
 	print "transmissionInterval (sec): ", interval, " generated playloadSize (byte): ", size
-	while (not self.stop_event.is_set()):
-
+	while (self.measurmentsActive == True):
 		# connect to NTP server 
 		ntpClient = ntplib.NTPClient()
-		ntpResponse = ntpClient.request('europe.pool.ntp.org', version=3)
+		ntpResponse = ntpClient.request('ntp1.belwue.de', version=3)
 		sendTime = int(ntpResponse.tx_time*1000)
 
 		payload = {"timestamp":  sendTime, "data" : self.randomByteString(size)}
 		self.sendMessage(json.dumps(payload), binary=False)
-		self.stop_event.wait(interval)
+		time.sleep(interval)
 		pass
+
 	print "finished sending ... "
 
    # returns random upper cases string of len bytes
