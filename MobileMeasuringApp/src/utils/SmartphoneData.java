@@ -240,24 +240,24 @@ public class SmartphoneData {
 				String signalStrengthString = signalStrength.toString();
 				String[] values = signalStrengthString.split(" ");
 				
-				if(getNetworkType() == "LTE"){
+//				if(getNetworkType() == "LTE"){
 					LteSignalStrength = values[8];
 					LteRsrp = values[9];
 					LteRsrq = values[10];
 					LteRssnr = values[11];
 					LteCqi = values[12];
-				}
-				else if(getNetworkType() == "EDGE" || getNetworkType() == "GPRS"){
+//				}
+//				else if(getNetworkType() == "EDGE" || getNetworkType() == "GPRS"){
 					GsmRssi = -113 + 2 * Integer.parseInt(values[1]);
 					GsmBitErrorRate = Integer.parseInt(values[2]);
-				}
-				else{
+//				}
+//				else{
 					CdmaDbm = Integer.parseInt(values[3]);
 					CdmaEcio = Integer.parseInt(values[4]);
 					EvdoDbm = values[5];
 					EvdoEcio = values[6];
 					EvdoSnr = values[7];			
-				}
+//				}
 			}
 		};
 
