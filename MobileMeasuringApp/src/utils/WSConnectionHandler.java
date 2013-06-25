@@ -80,19 +80,19 @@ public class WSConnectionHandler extends WebSocketConnectionHandler{
 			pWebSocket.notificationArrayAdapter.add("GsmRssi: "+smartphoneData.getGsmRssi());
 			pWebSocket.notificationArrayAdapter.add("GsmBitErrorRate: "+smartphoneData.getGsmBitErrorRate());
 
-			pWebSocket.notificationArrayAdapter.add("CdmaDbm: "+smartphoneData.getCdmaDbm());
-			pWebSocket.notificationArrayAdapter.add("CdmaEcio: "+smartphoneData.getCdmaEcio());
-			pWebSocket.notificationArrayAdapter.add("EvdoDbm: "+smartphoneData.getEvdoDbm());
-			pWebSocket.notificationArrayAdapter.add("EvdoEcio: "+smartphoneData.getEvdoEcio());
-			pWebSocket.notificationArrayAdapter.add("EvdoSnr: "+smartphoneData.getEvdoSnr());
+//			pWebSocket.notificationArrayAdapter.add("CdmaDbm: "+smartphoneData.getCdmaDbm());
+//			pWebSocket.notificationArrayAdapter.add("CdmaEcio: "+smartphoneData.getCdmaEcio());
+//			pWebSocket.notificationArrayAdapter.add("EvdoDbm: "+smartphoneData.getEvdoDbm());
+//			pWebSocket.notificationArrayAdapter.add("EvdoEcio: "+smartphoneData.getEvdoEcio());
+//			pWebSocket.notificationArrayAdapter.add("EvdoSnr: "+smartphoneData.getEvdoSnr());
+//			
+//			pWebSocket.notificationArrayAdapter.add("LteRsrp: "+smartphoneData.getLteRsrp());
+//			pWebSocket.notificationArrayAdapter.add("LteSignalStrength: "+smartphoneData.getLteSignalStrength());
+//			pWebSocket.notificationArrayAdapter.add("LteRsrq: "+smartphoneData.getLteRsrq());
+//			pWebSocket.notificationArrayAdapter.add("LteRssnr: "+smartphoneData.getLteRssnr());
+//			pWebSocket.notificationArrayAdapter.add("LteCqi: "+smartphoneData.getLteCqi());
 			
-			pWebSocket.notificationArrayAdapter.add("LteRsrp: "+smartphoneData.getLteRsrp());
-			pWebSocket.notificationArrayAdapter.add("LteSignalStrength: "+smartphoneData.getLteSignalStrength());
-			pWebSocket.notificationArrayAdapter.add("LteRsrq: "+smartphoneData.getLteRsrq());
-			pWebSocket.notificationArrayAdapter.add("LteRssnr: "+smartphoneData.getLteRssnr());
-			pWebSocket.notificationArrayAdapter.add("LteCqi: "+smartphoneData.getLteCqi());
-			
-			
+			pWebSocket.notificationArrayAdapter.add("networkType: "+smartphoneData.getNetworkType());
 			pWebSocket.notificationArrayAdapter.add(transmissionTime+" (transmissionTime)");
 			pWebSocket.notificationArrayAdapter.add(receiveTime+" (receiveTime)");
 			pWebSocket.notificationArrayAdapter.add("latency (ms): "+latency);
